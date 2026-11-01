@@ -1,0 +1,12 @@
+## Interface: 120000, 120001, 120005, 120007, 16001
+## Title: Bar Stack
+## Notes: Layer single-purpose bars built from Blizzard's Cooldown Manager frames.
+## Author: severin
+## Version: 0.1.0
+## SavedVariables: BarStackDB
+## IconTexture: Interface\Icons\Ability_Warrior_OffensiveStance
+## AddonCompartmentFunc: BarStack_OnCompartmentClick
+
+Core.lua
+Stack.lua
+Config.lua
