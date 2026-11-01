@@ -1,4 +1,4 @@
-## Interface: 120000, 120001, 120005, 120007, 16001
+## Interface: 120000, 120001, 120005, 120007, 120100, 120105, 16001
 ## Title: Bar Stack
 ## Notes: Layer single-purpose bars built from Blizzard's Cooldown Manager frames.
 ## Author: severin
