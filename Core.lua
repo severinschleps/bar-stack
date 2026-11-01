@@ -230,6 +230,58 @@ end
 -- Events, slash command, addon compartment
 ------------------------------------------------------------------------
 
+-- ponytail: hand-rolled LibDBIcon look-alike; assumes a round minimap, buttons sit off the edge of square ones
+local function minimapButton()
+  local b = CreateFrame("Button", "BarStackMinimapButton", Minimap)
+  b:SetSize(31, 31)
+  b:SetFrameStrata("MEDIUM")
+  b:SetFrameLevel(8)
+  b:RegisterForClicks("AnyUp")
+  b:RegisterForDrag("LeftButton")
+  b:SetHighlightTexture(136477) -- UI-Minimap-ZoomButton-Highlight
+  local bg = b:CreateTexture(nil, "BACKGROUND")
+  bg:SetSize(20, 20)
+  bg:SetPoint("TOPLEFT", 7, -5)
+  bg:SetTexture(136467) -- UI-Minimap-Background
+  local icon = b:CreateTexture(nil, "ARTWORK")
+  icon:SetSize(17, 17)
+  icon:SetPoint("TOPLEFT", 7, -6)
+  icon:SetTexture("Interface\\Icons\\Ability_Warrior_OffensiveStance")
+  local border = b:CreateTexture(nil, "OVERLAY")
+  border:SetSize(50, 50)
+  border:SetPoint("TOPLEFT")
+  border:SetTexture(136430) -- MiniMap-TrackingBorder
+
+  local function place()
+    local a, r = math.rad(BS.db.minimapAngle or 225), Minimap:GetWidth() / 2 + 5
+    b:ClearAllPoints()
+    b:SetPoint("CENTER", Minimap, "CENTER", r * math.cos(a), r * math.sin(a))
+  end
+  place()
+
+  b:SetScript("OnClick", BS.ToggleConfig)
+  b:SetScript("OnDragStart", function()
+    b:SetScript("OnUpdate", function()
+      local mx, my = Minimap:GetCenter()
+      local cx, cy = GetCursorPosition()
+      local s = Minimap:GetEffectiveScale()
+      BS.db.minimapAngle = math.deg(math.atan2(cy / s - my, cx / s - mx))
+      place()
+    end)
+  end)
+  b:SetScript("OnDragStop", function()
+    b:SetScript("OnUpdate", nil)
+    BS.Save()
+  end)
+  b:SetScript("OnEnter", function()
+    GameTooltip:SetOwner(b, "ANCHOR_LEFT")
+    GameTooltip:AddLine("Bar Stack")
+    GameTooltip:AddLine("Click to open settings. Drag to move.", 1, 1, 1)
+    GameTooltip:Show()
+  end)
+  b:SetScript("OnLeave", GameTooltip_Hide)
+end
+
 local ev = CreateFrame("Frame")
 ev:RegisterEvent("PLAYER_LOGIN")
 ev:RegisterEvent("ADDON_LOADED")
@@ -242,6 +294,7 @@ ev:SetScript("OnEvent", function(_, event, arg)
     BS.LoadProfile()
     BS.Init()
     BS.Apply()
+    minimapButton()
     cdmPrompt()
   elseif event == "ADDON_LOADED" then
     if arg == "Blizzard_CooldownViewer" and BS.profile then BS.Apply() end
